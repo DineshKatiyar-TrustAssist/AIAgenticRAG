@@ -27,7 +27,7 @@ This is a demonstration/prototype. The code uses several third-party LLM tool wr
 - Environment variables (set in a `.env` file or in your environment):
   - `GROQ_API_KEY` — API key for Groq/ChatGroq usage (if required)
   - `SERPER_API_KEY` — API key for the Serper web search tool
-  - `GEMINI` — API key for the Gemini LLM used by `crew_llm`
+  - `GEMINI_API_KEY` — API key for the Gemini LLM used by `crew_llm`
 
 <h2><span style="color:#17becf">Python dependencies</span></h2>
 
