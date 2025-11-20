@@ -60,7 +60,7 @@ Note: Some packages have different names or require extra installation steps (e.
 ```
 GROQ_API_KEY=your_groq_key
 SERPER_API_KEY=your_serper_key
-GEMINI=your_gemini_key
+GEMINI_API_KEY=your_gemini_key
 ```
 
 3. Ensure you have adequate compute and API access for the LLMs referenced. The example LLM models in `app.py` are large and may require hosted endpoints or different credentials.
