@@ -1,22 +1,33 @@
 import os
 from dotenv import load_dotenv
-from langchain.vectorstores import FAISS
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool
 from crewai import Agent, Task, Crew, LLM
-import argparse
+
 
 load_dotenv() 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY") 
 SERPER_API_KEY = os.getenv("SERPER_API_KEY")
-GEMINI=os.getenv("GEMINI")
+GEMINI_API_KEY=os.getenv("GEMINI_API_KEY")
+
+import google.generativeai as client
+
+# Set your API key
+#client.configure(api_key="GEMINI_API_KEY")
+
+# List available models
+models = client.list_models()
+for model in models:
+    print(model.name)
+
 
 ## Initialize LLM
 llm = ChatGroq(
-    model="llama-3.3-70b-specdec",
+    model="llama-3.3-70b-versatile",
     temperature=0,
     max_tokens=500,
     timeout=None,
@@ -24,8 +35,8 @@ llm = ChatGroq(
 )
 
 crew_llm = LLM(
-    model="gemini/gemini-1.5-flash",
-    api_key=GEMINI,
+    model="gemini/gemini-2.5-flash",
+    api_key=GEMINI_API_KEY,
     max_tokens=500,
     temperature=0.7
 )
@@ -194,14 +205,9 @@ def process_query(query, vector_db, local_context):
 
 # define main function
 def main():
-    parser = argparse.ArgumentParser(description="Agentic RAG demo runner")
-    parser.add_argument("--pdf", default="genai-principles.pdf", help="Path to PDF to index")
-    parser.add_argument("--query", default="What is Agentic RAG?", help="Query to ask the agent")
-    parser.add_argument("--no-web", action="store_true", help="Disable web search/scraping; use local only")
-    args = parser.parse_args()
-
-    pdf_path = args.pdf
-
+    # Setup
+    pdf_path = "Agent Quality.pdf" 
+    
     # Initialize vector database
     print(f"Setting up vector database from: {pdf_path} ...")
     try:
@@ -212,17 +218,9 @@ def main():
 
     # Get initial context from PDF for routing
     local_context = get_local_content(vector_db, "")
-
-    # Process the provided query
-    query = args.query
-    # If web is disabled and local routing fails, provide a friendly fallback
-    if args.no_web:
-        # run the local routing check but avoid calling web if negative
-        can_answer_locally = check_local_knowledge(query, local_context)
-        if not can_answer_locally:
-            print("Local knowledge does not contain the answer and web scraping is disabled (--no-web).")
-            return
-
+    
+    # Example usage
+    query = "What does the Agent quality matter?"
     result = process_query(query, vector_db, local_context)
     print("\nFinal Answer:")
     print(result)
